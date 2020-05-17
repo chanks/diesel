@@ -160,7 +160,25 @@ pub trait DatabaseErrorInformation {
 
 impl fmt::Debug for dyn DatabaseErrorInformation + Send + Sync {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        fmt::Debug::fmt(&self.message(), f)
+        let mut debug_struct = f
+            .debug_struct("DatabaseErrorInformation");
+        debug_struct.field("message", &self.message());
+        if let Some(details) = self.details() {
+            debug_struct.field("details", &details);
+        }
+        if let Some(hint) = self.hint() {
+            debug_struct.field("hint", &hint);
+        }
+        if let Some(table_name) = self.table_name() {
+            debug_struct.field("table_name", &table_name);
+        }
+        if let Some(column_name) = self.column_name() {
+            debug_struct.field("column_name", &column_name);
+        }
+        if let Some(constraint_name) = self.constraint_name() {
+            debug_struct.field("constraint_name", &constraint_name);
+        }
+        debug_struct.finish()
     }
 }
 
